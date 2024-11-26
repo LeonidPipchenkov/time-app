@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { getTimesFromServer, saveTimeOnServer, deleteTimeOnServer } from "./data";
+import { getTimesFromServer, saveTimeOnServer, deleteTimeOnServer } from './api';
 
 function runCountingTime() {
   setInterval(

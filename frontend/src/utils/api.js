@@ -1,4 +1,4 @@
-const SERVER_HOST = 'http://localhost:5555'
+const SERVER_HOST = import.meta.env.VITE_SERVER_HOST
 
 async function getTimesFromServer() {
   const res = await fetch(`${SERVER_HOST}/times`)
