@@ -1,57 +1,54 @@
-<script>
-import moment from 'moment'
-import { startInterval, saveTime, deleteTime } from '../utils/time'
-
-export default {
-  props: {
-    showSavedTimes: Boolean,
-  },
-  data() {
-    return {
-      currentTime: moment().format('HH:mm:ss'),
-      savedTimes: [],
-    }
-  },
-  methods: {
-    startInterval,
-    saveTime,
-    deleteTime,
-  },
-  created: async function () {
-    this.startInterval()
-    const res = await fetch('http://localhost:5555/times')
-    const json = await res.json()
-    if (json.length) this.savedTimes = json
-  },
-}
-</script>
-
 <template>
-  <div class="greetings">
-    <h1 class="green">{{ currentTime }}</h1>
-    <h3>Нажмите кнопку для сохранения в базе данных</h3>
-    <button @click="saveTime">Сохранить время</button>
-    <h3 v-if="savedTimes.length && showSavedTimes">
-      Ранее сохраненные времена:
-    </h3>
+  <div class="main">
+    <h1 class="current-time">{{ currentTime }}</h1>
+
+    <h3>Нажмите кнопку для сохранения времени</h3>
+    <button class="btn-save" @click="saveTime">Сохранить время</button>
+
+    <h3 v-if="showSavedTimes && savedTimes.length">Ранее сохраненные времена:</h3>
     <div
       v-if="showSavedTimes"
-      class="deleted-items"
+      class="saved-times"
       v-for="savedTime in savedTimes"
       :key="savedTime.id"
     >
-      <div class="deleted-item">{{ savedTime.time }}</div>
-      <button class="btn-sm bg-red" @click="() => deleteTime(savedTime.id)">
-        Удалить
-      </button>
+      <div class="saved-time">{{ savedTime.time }}</div>
+      <button class="btn-delete" @click="deleteTime(savedTime.id)">Удалить</button>
     </div>
   </div>
 </template>
 
+<script>
+import moment from 'moment'
+import { runCountingTime, getTimes, saveTime, deleteTime } from '@/utils/service'
+
+export default {
+  props: {
+    showSavedTimes: Boolean
+  },
+  data() {
+    return {
+      currentTime: moment().format('HH:mm:ss'),
+      savedTimes: []
+    }
+  },
+  methods: {
+    runCountingTime,
+    getTimes,
+    saveTime,
+    deleteTime
+  },
+  created() {
+    this.runCountingTime()
+    this.getTimes()
+  }
+}
+</script>
+
 <style scoped>
 h1 {
-  font-weight: 500;
   font-size: 4rem;
+  font-weight: 500;
   top: -10px;
 }
 
@@ -60,34 +57,44 @@ h3 {
 }
 
 button {
-  font-size: 1.5rem;
-  margin: 30px;
-  background-color: rgb(128, 184, 244);
   border-radius: 5px;
   border: none;
-  padding: 10px;
   cursor: pointer;
 }
 
-.btn-sm {
-  margin: 10px;
-  padding: 4px;
+button:active {
+  transform: translateY(4px);
 }
 
-.bg-red {
-  background-color: rgb(184, 93, 93);
+.main {
+  text-align: center;
 }
 
-.deleted-items {
+.current-time {
+  color: var(--color-green-light);
+}
+
+.btn-save {
+  font-size: 1.5rem;
+  margin: 30px;
+  padding: 10px;
+  background-color: var(--color-blue-light);
+}
+
+.saved-times {
   font-size: 1.7rem;
 }
 
-.deleted-item {
+.saved-time {
   width: 150px;
   display: inline-block;
 }
 
-.greetings {
-  text-align: center;
+.btn-delete {
+  font-size: 1rem;
+  margin: 10px;
+  padding: 4px;
+  vertical-align: top;
+  background-color: var(--color-red-light);
 }
 </style>
